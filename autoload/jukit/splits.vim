@@ -261,7 +261,11 @@ fun! jukit#splits#_build_shell_cmd(...) abort
     endif
 
     if use_ipy
-        let pyfile_ws_sub = substitute(escape(expand('%:p'), '\'), ' ', '<JUKIT_WS_PH>', 'g')
+        " let pyfile_ws_sub = substitute(escape(expand('%:p'), '\'), ' ', '<JUKIT_WS_PH>', 'g')
+        let pyfile_ws_sub =  escape(expand('%'), '\')
+        let pyfile_ws_sub = substitute(pyfile_ws_sub, ' ', '(WU)', 'g')
+        let pyfile_ws_sub = substitute(pyfile_ws_sub, '-', '(WI)', 'g')
+        echo pyfile_ws_sub
         let store_png = g:jukit_hist_use_ueberzug ? ' --store_png' : ''
         let cmd = cmd
             \. "from IPython import get_ipython;"
