@@ -86,6 +86,7 @@ class JukitCaptureOutput(object):
         if "__jukit_init_rich_console" not in locals():
             try:
                 from rich import get_console as __jukit_init_rich_console
+
                 __jukit_init_rich_console()
             except ModuleNotFoundError:
                 __jukit_init_rich_console = None
@@ -130,7 +131,7 @@ class StringIOWrapper(object):
             return getattr(self._wrapped_stdout, attr)
         elif hasattr(self._sys_stdout, attr):
             return getattr(self._sys_stdout, attr)
-        elif attr == "rich_proxied_file": # TODO: workaround for rich module
+        elif attr == "rich_proxied_file":  # TODO: workaround for rich module
             return self
 
     def write(self, text):
@@ -179,16 +180,19 @@ class JukitRun(TerminalMagics):
     )
     @line_magic
     def jukit_init(self, param: str):
+        print(param)
         args = parse_argstring(self.jukit_init, param)
-        py_file = args.py_file.replace("<JUKIT_WS_PH>", " ")
+        py_file = args.py_file.replace("(WU)", " ")
+        py_file = py_file.replace("(WI)", "-")
         dir_, fname = os.path.split(py_file)
         fname_outhist = os.path.splitext(fname)[0] + "_outhist.json"
 
         self.ueberzug_options = args.ueberzug_opt
         self.create_png = None
         if self.ueberzug_options is not None:
-            self.ueberzug_options = self.ueberzug_options.split(',')
+            self.ueberzug_options = self.ueberzug_options.split(",")
             from ueberzug_output.show_output import create_png
+
             self.create_png = create_png
 
         self.store_png = args.store_png
@@ -272,10 +276,14 @@ class JukitRun(TerminalMagics):
 
         if cmd_param:
             cmd, param = cmd_param
-            opts, name = self.parse_options(param, "pqs", "cell_id=", "md_cell_start=", mode="string")
+            opts, name = self.parse_options(
+                param, "pqs", "cell_id=", "md_cell_start=", mode="string"
+            )
         else:
             param, cmd = self._get_info_json_keys("cmd_opts", "cmd")
-            opts, name = self.parse_options(param, "pqs", "cell_id=", "md_cell_start=", mode="string")
+            opts, name = self.parse_options(
+                param, "pqs", "cell_id=", "md_cell_start=", mode="string"
+            )
 
         if "p" not in opts:
             util.hide_prompt(self.shell)
